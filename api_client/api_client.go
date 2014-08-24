@@ -35,7 +35,7 @@ func New(baseUrl string, fb_auth_token string) *APIClient {
   return &APIClient{
     baseUrl: baseUrl,
     fbOauthToken: fbOauthToken,
-    sessionAuthToken: nil,
+    sessionAuthToken: 'SOME-SECRET-HERE',
     client: Client
   }
 }
@@ -71,9 +71,13 @@ func (this APIClient) httpRequest(method string, path string) (map, error){
 
   switch method {
     case GET:
-      resp, err := http.Get(fullPath) // set headers on request
+      req, _ = http.NewRequest(GET, fullPath)
+      req.Header.Set("X-Auth-Token", this.sessionAuthToken)
+      resp, err := this.client.Do(req)
     case POST:
-      resp, err := http.Post(fullPath) // set headers on request
+      req, _ = http.NewRequest(POST, fullPath)
+      req.Header.Set("X-Auth-Token", this.sessionAuthToken)
+      resp, err := this.client.Do(req)
     default:
       return nil, fmt.Sprintf(
         "Only %s and %s are supported by this client", GET, POST)
