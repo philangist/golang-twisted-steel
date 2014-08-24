@@ -1,12 +1,12 @@
 package api_client
 
 import (
-  "endcoding/json"
+  "encoding/json"
   "fmt"
-  "http"
-  "ioutil"
-  "http"
+  "io/ioutil"
+  "net/http"
   "time"
+  "errors"
 )
 
 // Tinder api client only supports get and post requests
@@ -14,7 +14,7 @@ const (
   GET = "GET"
   POST = "POST"
   HTTP_REQUEST_TIMEOUT = 30
-  )
+)
 
 // interface to http library, returns native go types from parsed
 // http responses, sets auth parameters before every request, and handles
@@ -26,86 +26,109 @@ type APIClient struct {
   client  http.Client
 }
 
-func New(baseUrl string, fb_auth_token string) *APIClient {
+func New(baseUrl string, fbOauthToken string) *APIClient {
   // set a timeout on this client
-  client = &http.Client{
-    Timeout: time.Duration(HTTP_REQUEST_TIMEOUT)*time.Second
+  client := &http.Client{
+    Timeout: time.Duration(HTTP_REQUEST_TIMEOUT) * time.Second,
   }
 
   return &APIClient{
     baseUrl: baseUrl,
     fbOauthToken: fbOauthToken,
-    sessionAuthToken: 'SOME-SECRET-HERE',
-    client: Client
+    sessionAuthToken: "SOME-SECRET-HERE",
+    client: *client,
   }
 }
 
-func (this APIClient) buildQueryParamString(queryParams) string {
-  queryParamsString := ''
+func (this APIClient) buildQueryParamString(queryParams map[string]string) (
+                                            string) {
+  queryParamsString := ""
 
   if queryParams != nil {
-    idx = 0
-    for key, value := range queryParams{
-      if idx == 0:
-        key = fmt.Sprintf('?%s', key)
+    idx := 0
+    for key := range queryParams{
+      value := queryParams[key]
+      if idx == 0{
+        key = fmt.Sprintf("?%s", key)
+      }
 
-      queryParamString = fmt.Sprintf('%s%s&', key, val)
+      queryParamString := fmt.Sprintf("%s%s&", key, value)
       queryParamsString += queryParamString
       idx += 1
     }
-    queryParamsString = queryParamsString[:-1]  // strip off trailing '&'
+    queryParamsString = queryParamsString[:idx]  // strip off trailing '&'
   }
 
   return queryParamsString
 }
 
-func (this APIClient) httpRequest(method string, path string) (map, error){
-  if this.sessionAuthToken == nil {
-    return nil, (
-      "Client can not be used to make requests "
-      "unless authenticated session toke is available"
-      )
+func (this APIClient) httpRequest(method string, path string) (
+                                  map[string]string, error) {
+  if this.sessionAuthToken == "" {
+    return nil, errors.New(
+      "Client can not be used to make requests unless authenticated session" +
+      " token is available")
   }
+
+  var resp *http.Response
+  var err error
 
   fullPath := this.baseUrl + path
 
   switch method {
     case GET:
-      req, _ = http.NewRequest(GET, fullPath)
+      req, err := http.NewRequest(GET, fullPath, nil)
+      if err != nil {
+        return nil, err
+      }
+
       req.Header.Set("X-Auth-Token", this.sessionAuthToken)
-      resp, err := this.client.Do(req)
+      resp, err = this.client.Do(req)
+      if err != nil {
+        return nil, err
+      }
     case POST:
-      req, _ = http.NewRequest(POST, fullPath)
+      req, err := http.NewRequest(POST, fullPath, nil)
+      if err != nil {
+        return nil, err
+      }
+
       req.Header.Set("X-Auth-Token", this.sessionAuthToken)
-      resp, err := this.client.Do(req)
+      resp, err = this.client.Do(req)
+      if err != nil {
+        return nil, err
+      }
     default:
-      return nil, fmt.Sprintf(
-        "Only %s and %s are supported by this client", GET, POST)
+      return nil, errors.New(fmt.Sprintf(
+        "Only %s and %s are supported by this client", GET, POST))
   }
+
+  defer resp.Body.Close()
+  data, err := ioutil.ReadAll(resp.Body)
+
+  if err != nil{
+    return nil, err
+  }
+  var parsedResponse map[string]string
+  err = json.Unmarshal(data, &parsedResponse)
 
   if err != nil {
     return nil, err
   }
 
-  defer resp.Body.Close()
-  data, err = ioutil.ReadAll(resp.Body)
-
-  if err != nil{
-    return nil, err
-  }
-  parsedResponse, err = json.Unmarshal(data)
-
   return parsedResponse, err
 
 }
 
-func (this APIClient) Get(path string, queryParams map) (map, error) {
-  // Url encodes params, hits endpoint, returns map{}
+func (this APIClient) Get(path string, queryParams map[string]string) (
+                          map[string]string, error) {
+  // Url encodes params, hits endpoint
   path =  path + this.buildQueryParamString(queryParams)
-  return this.httpRequest(GET, path+queryParamsString)
+  return this.httpRequest(GET, path)
 }
 
-func (this APIClient) Post(path string, queryParams map) (map, error) {
+func (this APIClient) Post(path string, queryParams map[string]string) (
+                           map[string]string, error) {
   path =  path + this.buildQueryParamString(queryParams)
   return this.httpRequest(POST, path)
 }
