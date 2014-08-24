@@ -28,7 +28,7 @@ type APIClient struct {
 
 func New(baseUrl string, fbOauthToken string) *APIClient {
   // set a timeout on this client
-  client := &http.Client{
+  client := http.Client{
     Timeout: time.Duration(HTTP_REQUEST_TIMEOUT) * time.Second,
   }
 
@@ -36,7 +36,7 @@ func New(baseUrl string, fbOauthToken string) *APIClient {
     baseUrl: baseUrl,
     fbOauthToken: fbOauthToken,
     sessionAuthToken: "SOME-SECRET-HERE",
-    client: *client,
+    client: client,
   }
 }
 
@@ -54,7 +54,7 @@ func (this APIClient) buildQueryParamString(queryParams map[string]string) (
 
       queryParamString := fmt.Sprintf("%s%s&", key, value)
       queryParamsString += queryParamString
-      idx += 1
+      idx++
     }
     queryParamsString = queryParamsString[:idx]  // strip off trailing '&'
   }
@@ -74,6 +74,7 @@ func (this APIClient) httpRequest(method string, path string) (
   var err error
 
   fullPath := this.baseUrl + path
+
 
   switch method {
     case GET:
@@ -109,12 +110,17 @@ func (this APIClient) httpRequest(method string, path string) (
   if err != nil{
     return nil, err
   }
+
+
   var parsedResponse map[string]string
   err = json.Unmarshal(data, &parsedResponse)
 
   if err != nil {
     return nil, err
   }
+
+  print(fmt.Sprintf("\nparsedResponse is ", parsedResponse))
+  print(fmt.Sprintf("\nerr is ", err))
 
   return parsedResponse, err
 
