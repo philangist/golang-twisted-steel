@@ -10,3 +10,5 @@ Build Tinder API Client
 - Like a recommendation
 
 Build RESTful http api that returns info about /swipes and /matches
+
+- Add tests (DUH!)
