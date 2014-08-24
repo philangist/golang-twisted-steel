@@ -1,0 +1,12 @@
+Build FB Oauth Flow logic to get auth token
+
+Define recommendation type
+- has info about a girl (id, name, age, bio, pic)
+
+Build Tinder API Client
+- Base url
+- Exchange fb token for 'X-Auth-Token' session token
+- Return reccomendations
+- Like a recommendation
+
+Build RESTful http api that returns info about /swipes and /matches
