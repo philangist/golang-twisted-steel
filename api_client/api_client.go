@@ -34,8 +34,6 @@ func (this RequestPreprocessor) Preprocess(req *http.Request) (*http.Request){
   return req
 }
 
-//define new tinder api client that embeds api client and defines fb oauth token and x-auth-header values
-
 type APIClient struct {
   baseUrl string
   client http.Client
@@ -43,7 +41,6 @@ type APIClient struct {
 }
 
 func NewApiClient(baseUrl string) APIClient {
-  // set a timeout on this client
   client := http.Client{
     Timeout: time.Duration(HTTP_REQUEST_TIMEOUT) * time.Second,
   }

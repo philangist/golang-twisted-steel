@@ -1,9 +1,9 @@
 package main
 
-// import "philangist.github.com/twisted-steel/sleepy"
 import (
   "philangist.github.com/twisted-steel/api_client"
   "encoding/json"
+  "fmt"
   )
 
 type InstagramApiClient struct {
@@ -11,8 +11,11 @@ type InstagramApiClient struct {
   AuthParams map[string]string
 }
 
-func (this InstagramApiClient) GetMe() ([]byte, error){
-  return this.ApiClient.Get("/me", this.AuthParams)
+func (this InstagramApiClient) GetUser(userId string) ([]byte, error){
+  return this.ApiClient.Get(
+    fmt.Sprintf("/users/%s", userId),
+    this.AuthParams,
+  )
 }
 
 
@@ -25,7 +28,7 @@ func main(){
     ApiClient: ApiClient,
     AuthParams: AuthParams,
   }
-  data, err := InstagramClient.ApiClient.Get("/users/1574083", AuthParams)
+  data, err := InstagramClient.GetUser("1574083")
 
   if err != nil {
     panic(err)
