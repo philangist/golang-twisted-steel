@@ -1,15 +1,10 @@
-Build FB Oauth Flow logic to get auth token
+Build PlatformApiClient interface that defines
+get followers and get follows methods
 
-Define recommendation type
-- has info about a girl (id, name, age, bio, pic)
+Define PlatformUser type
+- has info about an account (id, name, bio, pic, follow or not)
 
-Build Tinder API Client
-- Base url
-- Exchange fb token for 'X-Auth-Token' session token
-- Return reccomendations
-- Like a recommendation
-
-Build RESTful http api that returns info about /swipes and /matches
+Build RESTful http api that returns info about /following, /followers, and /mututal
 
 - Add tests (DUH!)
 - Use travis to manage build

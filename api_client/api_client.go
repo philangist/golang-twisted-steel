@@ -1,7 +1,6 @@
 package api_client
 
 import (
-//  "encoding/json"
   "fmt"
   "io/ioutil"
   "net/http"
@@ -9,7 +8,6 @@ import (
   "errors"
 )
 
-// Tinder api client only supports get and post requests
 const (
   GET = "GET"
   POST = "POST"
