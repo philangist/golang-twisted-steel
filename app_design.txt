@@ -12,3 +12,4 @@ Build Tinder API Client
 Build RESTful http api that returns info about /swipes and /matches
 
 - Add tests (DUH!)
+- Use travis to manage build

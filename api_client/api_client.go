@@ -26,7 +26,7 @@ type APIClient struct {
   client  http.Client
 }
 
-func New(baseUrl string, fbOauthToken string) *APIClient {
+func NewApiClient(baseUrl string, fbOauthToken string) *APIClient {
   // set a timeout on this client
   client := http.Client{
     Timeout: time.Duration(HTTP_REQUEST_TIMEOUT) * time.Second,
@@ -46,17 +46,17 @@ func (this APIClient) buildQueryParamString(queryParams map[string]string) (
 
   if queryParams != nil {
     idx := 0
-    for key := range queryParams{
-      value := queryParams[key]
+    for key, value := range queryParams{
       if idx == 0{
         key = fmt.Sprintf("?%s", key)
       }
+      idx += 1
 
-      queryParamString := fmt.Sprintf("%s%s&", key, value)
+      queryParamString := fmt.Sprintf("%s=%s&", key, value)
       queryParamsString += queryParamString
-      idx++
     }
-    queryParamsString = queryParamsString[:idx]  // strip off trailing '&'
+    //strip off trailing '&'
+    queryParamsString = queryParamsString[:len(queryParamsString) - 1]
   }
 
   return queryParamsString
@@ -118,9 +118,6 @@ func (this APIClient) httpRequest(method string, path string) (
   if err != nil {
     return nil, err
   }
-
-  print(fmt.Sprintf("\nparsedResponse is ", parsedResponse))
-  print(fmt.Sprintf("\nerr is ", err))
 
   return parsedResponse, err
 
