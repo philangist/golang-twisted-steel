@@ -42,7 +42,7 @@ type APIClient struct {
   requestPreprocessor RequestPreprocessor
 }
 
-func NewApiClient(baseUrl string) *APIClient {
+func NewApiClient(baseUrl string) APIClient {
   // set a timeout on this client
   client := http.Client{
     Timeout: time.Duration(HTTP_REQUEST_TIMEOUT) * time.Second,
@@ -52,7 +52,7 @@ func NewApiClient(baseUrl string) *APIClient {
     []HeaderParameter{},
   }
 
-  return &APIClient{
+  return APIClient{
     baseUrl: baseUrl,
     client: client,
     requestPreprocessor: requestPreprocessor,
