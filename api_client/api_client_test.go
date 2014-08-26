@@ -22,13 +22,13 @@ func Equal(t *testing.T, actual, expectation interface{}){
 
 func TestApiClient(t *testing.T){
   baseUrl := "https://api.gotinder.com"
-  fbOauthToken := "foobar"
+  // fbOauthToken := "foobar"
   invalidPath := "/doesNotExist"
 
-  ApiClient := NewApiClient(baseUrl, fbOauthToken)
+  ApiClient := NewApiClient(baseUrl)
 
   Equal(t, ApiClient.baseUrl, baseUrl)
-  Equal(t, ApiClient.fbOauthToken, fbOauthToken)
+  // Equal(t, ApiClient.fbOauthToken, fbOauthToken)
 
   resp, err := ApiClient.Get(invalidPath, nil)
   Equal(t, resp, map[string]string{"status":"not found"})

@@ -16,27 +16,46 @@ const (
   HTTP_REQUEST_TIMEOUT = 30
 )
 
-// interface to http library, returns native go types from parsed
-// http responses, sets auth parameters before every request, and handles
-// boilerplate so that TinderApiClient can just work
-type APIClient struct {
-  baseUrl string
-  fbOauthToken string
-  sessionAuthToken string
-  client  http.Client
+type HeaderParameter struct {
+  key string
+  value string
 }
 
-func NewApiClient(baseUrl string, fbOauthToken string) *APIClient {
+type RequestPreprocessor struct {
+  HeaderParameters []HeaderParameter
+}
+
+func (this RequestPreprocessor) Preprocess(req *http.Request) (*http.Request){
+  for _, headerParameter := range this.HeaderParameters{
+    req.Header.Set(
+      headerParameter.key, headerParameter.value,
+    )
+  }
+  return req
+}
+
+//define new tinder api client that embeds api client and defines fb oauth token and x-auth-header values
+
+type APIClient struct {
+  baseUrl string
+  client http.Client
+  requestPreprocessor RequestPreprocessor
+}
+
+func NewApiClient(baseUrl string) *APIClient {
   // set a timeout on this client
   client := http.Client{
     Timeout: time.Duration(HTTP_REQUEST_TIMEOUT) * time.Second,
   }
 
+  requestPreprocessor := RequestPreprocessor{
+    []HeaderParameter{},
+  }
+
   return &APIClient{
     baseUrl: baseUrl,
-    fbOauthToken: fbOauthToken,
-    sessionAuthToken: "SOME-SECRET-HERE",
     client: client,
+    requestPreprocessor: requestPreprocessor,
   }
 }
 
@@ -63,17 +82,17 @@ func (this APIClient) buildQueryParamString(queryParams map[string]string) (
 }
 
 func (this APIClient) Do(req *http.Request) (*http.Response, error){
-  req.Header.Set("X-Auth-Token", this.sessionAuthToken)
+  req = this.requestPreprocessor.Preprocess(req)
   return this.client.Do(req)
 }
 
 func (this APIClient) httpRequest(method string, path string) (
                                   map[string]string, error) {
-  if this.sessionAuthToken == "" {
+  /**if this.sessionAuthToken == "" {
     return nil, errors.New(
       "Client can not be used to make requests unless authenticated session" +
       " token is available")
-  }
+  }**/
 
   var resp *http.Response
   var err error
