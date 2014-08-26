@@ -1,7 +1,7 @@
 package api_client
 
 import (
-  "encoding/json"
+//  "encoding/json"
   "fmt"
   "io/ioutil"
   "net/http"
@@ -87,18 +87,10 @@ func (this APIClient) Do(req *http.Request) (*http.Response, error){
 }
 
 func (this APIClient) httpRequest(method string, path string) (
-                                  map[string]string, error) {
-  /**if this.sessionAuthToken == "" {
-    return nil, errors.New(
-      "Client can not be used to make requests unless authenticated session" +
-      " token is available")
-  }**/
+  []byte, error) {
 
   var resp *http.Response
-  var err error
-
   fullPath := this.baseUrl + path
-
 
   switch method {
     case GET:
@@ -127,33 +119,17 @@ func (this APIClient) httpRequest(method string, path string) (
   }
 
   defer resp.Body.Close()
-  data, err := ioutil.ReadAll(resp.Body)
-
-  if err != nil{
-    return nil, err
-  }
-
-
-  var parsedResponse map[string]string
-  err = json.Unmarshal(data, &parsedResponse)
-
-  if err != nil {
-    return nil, err
-  }
-
-  return parsedResponse, err
-
+  return ioutil.ReadAll(resp.Body)
 }
 
 func (this APIClient) Get(path string, queryParams map[string]string) (
-                          map[string]string, error) {
-  // Url encodes params, hits endpoint
+  []byte, error) {
   path =  path + this.buildQueryParamString(queryParams)
   return this.httpRequest(GET, path)
 }
 
 func (this APIClient) Post(path string, queryParams map[string]string) (
-                           map[string]string, error) {
+  []byte, error) {
   path =  path + this.buildQueryParamString(queryParams)
   return this.httpRequest(POST, path)
 }
