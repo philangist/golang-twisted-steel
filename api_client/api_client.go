@@ -62,6 +62,11 @@ func (this APIClient) buildQueryParamString(queryParams map[string]string) (
   return queryParamsString
 }
 
+func (this APIClient) Do(req *http.Request) (*http.Response, error){
+  req.Header.Set("X-Auth-Token", this.sessionAuthToken)
+  return this.client.Do(req)
+}
+
 func (this APIClient) httpRequest(method string, path string) (
                                   map[string]string, error) {
   if this.sessionAuthToken == "" {
@@ -83,8 +88,7 @@ func (this APIClient) httpRequest(method string, path string) (
         return nil, err
       }
 
-      req.Header.Set("X-Auth-Token", this.sessionAuthToken)
-      resp, err = this.client.Do(req)
+      resp, err = this.Do(req)
       if err != nil {
         return nil, err
       }
@@ -94,8 +98,7 @@ func (this APIClient) httpRequest(method string, path string) (
         return nil, err
       }
 
-      req.Header.Set("X-Auth-Token", this.sessionAuthToken)
-      resp, err = this.client.Do(req)
+      resp, err = this.Do(req)
       if err != nil {
         return nil, err
       }
