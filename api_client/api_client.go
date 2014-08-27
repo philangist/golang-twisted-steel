@@ -98,6 +98,7 @@ func (this APIClient) httpRequest(method string, path string) (
       if err != nil {
         return nil, err
       }
+
     case POST:
       req, err := http.NewRequest(POST, fullPath, nil)
       if err != nil {

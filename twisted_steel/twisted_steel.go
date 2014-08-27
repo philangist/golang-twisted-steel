@@ -19,10 +19,22 @@ var (
   }
 )
 
+
+type InstagramApiClient struct {
+  ApiClient api_client.APIClient
+  AuthParams map[string]string
+}
+
 type InstagramUserResource struct {
   sleepy.PostNotSupported
   sleepy.PutNotSupported
   sleepy.DeleteNotSupported
+}
+
+func check(err error){
+  if err != nil{
+    panic(err)
+  }
 }
 
 func (InstagramUserResource) Get(values url.Values) (int, interface{}){
@@ -36,18 +48,9 @@ func (InstagramUserResource) Get(values url.Values) (int, interface{}){
   }
 
   userData := getInstagramUser(userId)
-  //data := map[string]string{"data": string(userData[:])}
-  if err != nil{
-    panic(err)
-  }
-
   return 200, map[string]string{"data": string(userData[:])}
 }
 
-type InstagramApiClient struct {
-  ApiClient api_client.APIClient
-  AuthParams map[string]string
-}
 
 func (this InstagramApiClient) GetUser(userId string) ([]byte, error){
   return this.ApiClient.Get(
@@ -59,9 +62,7 @@ func (this InstagramApiClient) GetUser(userId string) ([]byte, error){
 
 func getInstagramUser(userId string) []byte{
   userBuffer, err := InstagramClient.GetUser(userId)
-  if err != nil {
-    panic(err)
-  }
+  check(err)
   return userBuffer
 }
 
