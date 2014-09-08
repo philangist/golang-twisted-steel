@@ -78,6 +78,7 @@ func (this APIClient) buildQueryParamString(queryParams map[string]string) (
 
 func (this APIClient) Do(req *http.Request) (*http.Response, error){
   req = this.requestPreprocessor.Preprocess(req)
+  fmt.Println("req.URL is %s", req.URL)
   return this.client.Do(req)
 }
 

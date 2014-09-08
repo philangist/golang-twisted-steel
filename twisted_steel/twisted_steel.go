@@ -1,6 +1,7 @@
 package main
 
 import (
+  "encoding/json"
   "errors"
   "fmt"
   "net/url"
@@ -31,6 +32,51 @@ var (
     **/
   }
 )
+
+type PlatformUser struct{
+  Username, ID string
+}
+
+
+type PlatformApiClient interface {
+  GetMe() (PlatformUser, error)
+  GetUser(string) (PlatformUser, error)
+  GetFollowers(string) ([]PlatformUser, error)
+  GetFollowing(string) ([]PlatformUser, error)
+  FollowUser(PlatformUser) (bool, error) //accepts PlatformUser as argument
+  UnfollowUser(PlatformUser) (bool, error) //accepts PlatformUser as argument
+}
+
+type InstagramApiClient struct {
+  ApiClient api_client.APIClient
+  AuthParams map[string]string
+}
+
+//-----------------------------------------------------------------
+// https://github.com/carbocation/go.instagram/blob/master/types.go
+type InstagramUserSchema struct{
+  Bio string
+  FullName string  `json:full_name`
+  ID string
+  ProfilePicture string `json:full_name`
+  Username string
+  Website string
+}
+
+type InstagramUserResponseSchema struct{
+  Meta struct {
+    Code int
+  }
+  Data InstagramUserSchema
+}
+//
+//-----------------------------------------------------------------
+
+type PlatformUserResource struct {
+  sleepy.PostNotSupported
+  sleepy.PutNotSupported
+  sleepy.DeleteNotSupported
+}
 
 func check(err error){
   if err != nil{
@@ -72,78 +118,56 @@ func getTokenForPlatform(PlatformName string) (string) {
   return token
 }
 
-type PlatformUser struct{
-  UserName, UserId string
-}
-
-type PlatformApiClient interface {
-  GetMe() (PlatformUser, error)
-  GetUser(string) ([]byte, error)
-  GetFollowers() ([]PlatformUser, error)
-  GetFollowing() ([]PlatformUser, error)
-  FollowUser(PlatformUser) (bool, error) //accepts PlatformUser as argument
-  UnfollowUser(PlatformUser) (bool, error) //accepts PlatformUser as argument
-}
-
-type InstagramApiClient struct {
-  ApiClient api_client.APIClient
-  AuthParams map[string]string
-}
-
 func (this InstagramApiClient) GetMe() (PlatformUser, error){
   // pass
   return PlatformUser{"foo", "bar"}, nil
 }
 
-
-func (this InstagramApiClient) GetUser(userId string) ([]byte, error){
-  return this.ApiClient.Get(
+func (this InstagramApiClient) GetUser(userId string) (PlatformUser, error){
+  resp, err := this.ApiClient.Get(
     fmt.Sprintf("/users/%s", userId),
     this.AuthParams,
   )
+  check(err)
+
+  var dat InstagramUserResponseSchema
+  err = json.Unmarshal(resp, &dat)
+  check(err)
+
+  platformUser := PlatformUser{dat.Data.Username, dat.Data.ID}
+  return platformUser, nil
 }
 
-
-func (this InstagramApiClient) GetFollowers() ([]PlatformUser, error){
-  // pass
+func (this InstagramApiClient) GetFollowers(userId string) ([]PlatformUser, error){
+  /** pass
+  resp, _ := this.ApiClient.Get(
+    fmt.Sprintf("/users/%s/followed-by", userId),
+    this.AuthParams,
+  )**/
   dummyUser := PlatformUser{"foo", "bar"}
   return []PlatformUser{dummyUser,}, nil
 }
 
-
-func (this InstagramApiClient) GetFollowing() ([]PlatformUser, error){
-  // pass
+func (this InstagramApiClient) GetFollowing(userId string) ([]PlatformUser, error){
+  /** pass
+  resp, _ := this.ApiClient.Get(
+    fmt.Sprintf("/users/%s/follows", userId),
+    this.AuthParams,
+  )**/
   dummyUser := PlatformUser{"foo", "bar"}
   return []PlatformUser{dummyUser,}, nil
 }
-
 
 func (this InstagramApiClient) FollowUser(user PlatformUser) (bool, error){
   // pass
   return true, nil
 }
 
-
 func (this InstagramApiClient) UnfollowUser(user PlatformUser) (bool, error){
   // pass
   return true, nil
 }
 
-
-func getInstagramUser(userId string) []byte{
-  instagramApiClient, err := GetPlatformApiClient(INSTAGRAM)
-  check(err)
-  userBuffer, err := instagramApiClient.GetUser(userId)
-  check(err)
-  return userBuffer
-}
-
-
-type PlatformUserResource struct {
-  sleepy.PostNotSupported
-  sleepy.PutNotSupported
-  sleepy.DeleteNotSupported
-}
 
 // api view logic
 
@@ -155,10 +179,22 @@ func (PlatformUserResource) Get(values url.Values) (int, interface{}){
       }
   }
 
-  userData := getInstagramUser(userId)
-  return 200, map[string]string{"data": string(userData[:])}
-}
+  instagramApiClient, err := GetPlatformApiClient(INSTAGRAM)
+  check(err)
+  platformUser, err := instagramApiClient.GetUser(userId)
 
+  check(err)
+  userFollowers, err := instagramApiClient.GetFollowers(userId)
+  check(err)
+  fmt.Println("userFollowers is %s", userFollowers)
+
+  return 200, map[string]map[string]string {
+    "data": {
+      "id": platformUser.ID,
+      "username": platformUser.Username,
+      },
+    }
+}
 
 func main(){
   platformUserResource := new(PlatformUserResource)
