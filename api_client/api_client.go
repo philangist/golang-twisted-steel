@@ -33,9 +33,9 @@ func (this RequestPreprocessor) Preprocess(req *http.Request) (*http.Request){
 }
 
 type APIClient struct {
-  baseUrl string
-  client http.Client
-  requestPreprocessor RequestPreprocessor
+  BaseUrl string
+  Client http.Client
+  RequestPreprocessor RequestPreprocessor
 }
 
 func NewApiClient(baseUrl string) APIClient {
@@ -48,13 +48,13 @@ func NewApiClient(baseUrl string) APIClient {
   }
 
   return APIClient{
-    baseUrl: baseUrl,
-    client: client,
-    requestPreprocessor: requestPreprocessor,
+    BaseUrl: baseUrl,
+    Client: client,
+    RequestPreprocessor: requestPreprocessor,
   }
 }
 
-func (this APIClient) buildQueryParamString(queryParams map[string]string) (
+func (this APIClient) BuildQueryParamString(queryParams map[string]string) (
                                             string) {
   queryParamsString := ""
 
@@ -77,16 +77,16 @@ func (this APIClient) buildQueryParamString(queryParams map[string]string) (
 }
 
 func (this APIClient) Do(req *http.Request) (*http.Response, error){
-  req = this.requestPreprocessor.Preprocess(req)
+  req = this.RequestPreprocessor.Preprocess(req)
   fmt.Println("req.URL is %s", req.URL)
-  return this.client.Do(req)
+  return this.Client.Do(req)
 }
 
 func (this APIClient) httpRequest(method string, path string) (
   []byte, error) {
 
   var resp *http.Response
-  fullPath := this.baseUrl + path
+  fullPath := this.BaseUrl + path
 
   switch method {
     case GET:
@@ -121,12 +121,12 @@ func (this APIClient) httpRequest(method string, path string) (
 
 func (this APIClient) Get(path string, queryParams map[string]string) (
   []byte, error) {
-  path =  path + this.buildQueryParamString(queryParams)
+  path =  path + this.BuildQueryParamString(queryParams)
   return this.httpRequest(GET, path)
 }
 
 func (this APIClient) Post(path string, queryParams map[string]string) (
   []byte, error) {
-  path =  path + this.buildQueryParamString(queryParams)
+  path =  path + this.BuildQueryParamString(queryParams)
   return this.httpRequest(POST, path)
 }
