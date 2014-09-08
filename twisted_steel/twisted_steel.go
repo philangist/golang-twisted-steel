@@ -52,25 +52,6 @@ type InstagramApiClient struct {
   AuthParams map[string]string
 }
 
-//-----------------------------------------------------------------
-// https://github.com/carbocation/go.instagram/blob/master/types.go
-type InstagramUserSchema struct{
-  Bio string
-  FullName string  `json:full_name`
-  ID string
-  ProfilePicture string `json:full_name`
-  Username string
-  Website string
-}
-
-type InstagramUserResponseSchema struct{
-  Meta struct {
-    Code int
-  }
-  Data InstagramUserSchema
-}
-//
-//-----------------------------------------------------------------
 
 type PlatformUserResource struct {
   sleepy.PostNotSupported
@@ -130,7 +111,7 @@ func (this InstagramApiClient) GetUser(userId string) (PlatformUser, error){
   )
   check(err)
 
-  var dat InstagramUserResponseSchema
+  var dat api_client.InstagramUserResponseSchema
   err = json.Unmarshal(resp, &dat)
   check(err)
 
