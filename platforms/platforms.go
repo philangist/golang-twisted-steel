@@ -99,7 +99,7 @@ func (this InstagramApiClient) GetUser(userId string) (PlatformUser, error){
   )
   utils.Check(err)
 
-  var dat api_client.InstagramUserResponseSchema
+  var dat InstagramUserResponseSchema
   err = json.Unmarshal(resp, &dat)
   utils.Check(err)
 

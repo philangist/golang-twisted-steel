@@ -1,7 +1,7 @@
 // JSON types for various platforms. Largely inspired by
 // https://github.com/carbocation/go.instagram/blob/master/types.go
 
-package api_client
+package platforms
 
 
 type InstagramUserSchema struct{
