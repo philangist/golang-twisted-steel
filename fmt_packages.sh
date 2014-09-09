@@ -1,3 +1,4 @@
+#!/bin/sh
 TWISTED_STEEL=`pwd`
 for folder in `ls -d -- */`                                                                                                                                  ✭
 do
