@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/url"
 
-	"philangist.github.com/restful-micro-framework/sleepy"
-	"philangist.github.com/twisted-steel/platforms"
-	"philangist.github.com/twisted-steel/utils"
+	"github.com/philangist/golang-twisted-steel/sleepy"
+	"github.com/philangist/golang-twisted-steel/platforms"
+	"github.com/philangist/golang-twisted-steel/utils"
 )
 
 type PlatformUserResource struct {

@@ -2,8 +2,8 @@
 package main
 
 import (
-	"philangist.github.com/restful-micro-framework/sleepy"
-	"philangist.github.com/twisted-steel/api_resources"
+	"github.com/philangist/golang-twisted-steel/sleepy"
+	"github.com/philangist/golang-twisted-steel/api_resources"
 )
 
 // api view logic

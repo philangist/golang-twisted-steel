@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"os"
 
-	"philangist.github.com/twisted-steel/api_client"
-	"philangist.github.com/twisted-steel/utils"
+	"github.com/philangist/golang-twisted-steel/api_client"
+	"github.com/philangist/golang-twisted-steel/utils"
 )
 
 const (

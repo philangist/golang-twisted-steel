@@ -3,8 +3,8 @@ package tests
 import (
 	"testing"
 
-	"philangist.github.com/twisted-steel/api_client"
-	"philangist.github.com/twisted-steel/utils"
+	"github.com/philangist/golang-twisted-steel/api_client"
+	"github.com/philangist/golang-twisted-steel/utils"
 )
 
 func TestApiClient(t *testing.T) {
