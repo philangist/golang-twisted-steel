@@ -1,36 +1,34 @@
 package tests
 
 import (
-  "testing"
+	"testing"
 
-  "philangist.github.com/twisted-steel/api_client"
-  "philangist.github.com/twisted-steel/utils"
+	"philangist.github.com/twisted-steel/api_client"
+	"philangist.github.com/twisted-steel/utils"
 )
 
+func TestApiClient(t *testing.T) {
+	baseUrl := "https://api.instagram.com"
+	// invalidPath := "/doesNotExist"
 
+	ApiClient := api_client.NewApiClient(baseUrl)
 
-func TestApiClient(t *testing.T){
-  baseUrl := "https://api.instagram.com"
-  // invalidPath := "/doesNotExist"
+	utils.Equal(t, ApiClient.BaseUrl, baseUrl)
 
-  ApiClient := api_client.NewApiClient(baseUrl)
+	// resp, err := ApiClient.Get(invalidPath, nil)
+	//utils.Equal(t, resp, map[string]string{"status":"not found"})
+	// utils.Equal(t, err, nil)
 
-  utils.Equal(t, ApiClient.BaseUrl, baseUrl)
+	queryParameters := map[string]string{
+		"foo":  "bar",
+		"baaz": "quux",
+	}
 
-  // resp, err := ApiClient.Get(invalidPath, nil)
-  //utils.Equal(t, resp, map[string]string{"status":"not found"})
-  // utils.Equal(t, err, nil)
+	queryString := "?foo=bar&baaz=quux"
 
-  queryParameters := map[string]string{
-    "foo": "bar",
-    "baaz": "quux",
-  }
-
-  queryString := "?foo=bar&baaz=quux"
-
-  utils.Equal(
-    t,
-    ApiClient.BuildQueryParamString(queryParameters),
-    queryString,
-  )
+	utils.Equal(
+		t,
+		ApiClient.BuildQueryParamString(queryParameters),
+		queryString,
+	)
 }
