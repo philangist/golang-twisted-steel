@@ -17,6 +17,14 @@ $ go run twisted_steel.go &
 ```
 N.B: `credentials.env` should be a config file with OAuth access tokens for various social media platforms:
 
+```
+export INSTAGRAM_TOKEN="INSTAGRAM_AUTH_PAYLOAD"
+export FACEBOOK_TOKEN="FACEBOOK_AUTH_PAYLOAD"
+export TWITTER_TOKEN="TWITTER_AUTH_PAYLOAD"
+export TUMBLR_TOKEN="TUMBLR_AUTH_PAYLOAD"
+export VINE_TOKEN="VINE_AUTH_PAYLOAD"
+```
+
 __Make a test request__  
 Request:
 
@@ -40,15 +48,7 @@ $ fg
 $ [Ctrl-c]
 ```
 
-```
-export INSTAGRAM_TOKEN="INSTAGRAM_AUTH_PAYLOAD"
-export FACEBOOK_TOKEN="FACEBOOK_AUTH_PAYLOAD"
-export TWITTER_TOKEN="TWITTER_AUTH_PAYLOAD"
-export TUMBLR_TOKEN="TUMBLR_AUTH_PAYLOAD"
-export VINE_TOKEN="VINE_AUTH_PAYLOAD"
-```
-
-__Tests__
+__Run tests locally__
 ```bash
 $ go test -v ./tests
 ```
@@ -56,7 +56,7 @@ $ go test -v ./tests
 
 ### License
 
-Copyright (c) 2011 Phil Opaola
+Copyright (c) 2014 Phil Opaola
 
 Distributed under an [MIT-style](http://www.opensource.org/licenses/mit-license.php) license.
 
